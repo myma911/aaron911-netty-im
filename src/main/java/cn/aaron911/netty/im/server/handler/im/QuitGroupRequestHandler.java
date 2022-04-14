@@ -1,17 +1,21 @@
 package cn.aaron911.netty.im.server.handler.im;
 
 
+import cn.aaron911.netty.im.protocol.ICommand;
 import cn.aaron911.netty.im.protocol.request.QuitGroupRequestPacket;
 import cn.aaron911.netty.im.protocol.response.QuitGroupResponsePacket;
+import cn.aaron911.netty.im.server.handler.HandlerAnnotation;
 import cn.aaron911.netty.im.util.SessionUtil;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.group.ChannelGroup;
 
+import static cn.aaron911.netty.im.protocol.command.Command.QUIT_GROUP_REQUEST;
 
+@HandlerAnnotation
 @ChannelHandler.Sharable
-public class QuitGroupRequestHandler extends SimpleChannelInboundHandler<QuitGroupRequestPacket> {
+public class QuitGroupRequestHandler extends SimpleChannelInboundHandler<QuitGroupRequestPacket> implements ICommand {
     public static final QuitGroupRequestHandler INSTANCE = new QuitGroupRequestHandler();
 
     private QuitGroupRequestHandler() {
@@ -30,5 +34,10 @@ public class QuitGroupRequestHandler extends SimpleChannelInboundHandler<QuitGro
         responsePacket.setGroupId(requestPacket.getGroupId());
         responsePacket.setSuccess(true);
         ctx.writeAndFlush(responsePacket);
+    }
+
+    @Override
+    public Byte getCommand() {
+        return QUIT_GROUP_REQUEST;
     }
 }

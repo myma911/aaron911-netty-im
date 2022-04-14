@@ -1,8 +1,9 @@
 package cn.aaron911.netty.im.server.handler.im;
 
-
+import cn.aaron911.netty.im.protocol.ICommand;
 import cn.aaron911.netty.im.protocol.request.ListGroupMembersRequestPacket;
 import cn.aaron911.netty.im.protocol.response.ListGroupMembersResponsePacket;
+import cn.aaron911.netty.im.server.handler.HandlerAnnotation;
 import cn.aaron911.netty.im.session.Session;
 import cn.aaron911.netty.im.util.SessionUtil;
 import io.netty.channel.Channel;
@@ -14,13 +15,14 @@ import io.netty.channel.group.ChannelGroup;
 import java.util.ArrayList;
 import java.util.List;
 
+import static cn.aaron911.netty.im.protocol.command.Command.LIST_GROUP_MEMBERS_REQUEST;
+
+@HandlerAnnotation
 @ChannelHandler.Sharable
-public class ListGroupMembersRequestHandler extends SimpleChannelInboundHandler<ListGroupMembersRequestPacket> {
+public class ListGroupMembersRequestHandler extends SimpleChannelInboundHandler<ListGroupMembersRequestPacket> implements ICommand {
     public static final ListGroupMembersRequestHandler INSTANCE = new ListGroupMembersRequestHandler();
 
-    private ListGroupMembersRequestHandler() {
-
-    }
+    private ListGroupMembersRequestHandler() {}
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, ListGroupMembersRequestPacket requestPacket) {
@@ -41,5 +43,10 @@ public class ListGroupMembersRequestHandler extends SimpleChannelInboundHandler<
         responsePacket.setGroupId(groupId);
         responsePacket.setSessionList(sessionList);
         ctx.writeAndFlush(responsePacket);
+    }
+
+    @Override
+    public Byte getCommand() {
+        return LIST_GROUP_MEMBERS_REQUEST;
     }
 }

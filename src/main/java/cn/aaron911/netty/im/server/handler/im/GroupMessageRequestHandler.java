@@ -1,17 +1,21 @@
 package cn.aaron911.netty.im.server.handler.im;
 
 
+import cn.aaron911.netty.im.protocol.ICommand;
 import cn.aaron911.netty.im.protocol.request.GroupMessageRequestPacket;
 import cn.aaron911.netty.im.protocol.response.GroupMessageResponsePacket;
+import cn.aaron911.netty.im.server.handler.HandlerAnnotation;
 import cn.aaron911.netty.im.util.SessionUtil;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.group.ChannelGroup;
 
+import static cn.aaron911.netty.im.protocol.command.Command.GROUP_MESSAGE_REQUEST;
 
+@HandlerAnnotation
 @ChannelHandler.Sharable
-public class GroupMessageRequestHandler extends SimpleChannelInboundHandler<GroupMessageRequestPacket> {
+public class GroupMessageRequestHandler extends SimpleChannelInboundHandler<GroupMessageRequestPacket> implements ICommand {
     public static final GroupMessageRequestHandler INSTANCE = new GroupMessageRequestHandler();
 
     private GroupMessageRequestHandler() {
@@ -30,5 +34,10 @@ public class GroupMessageRequestHandler extends SimpleChannelInboundHandler<Grou
         // 2. 拿到群聊对应的 channelGroup，写到每个客户端
         ChannelGroup channelGroup = SessionUtil.getChannelGroup(groupId);
         channelGroup.writeAndFlush(responsePacket);
+    }
+
+    @Override
+    public Byte getCommand() {
+        return GROUP_MESSAGE_REQUEST;
     }
 }

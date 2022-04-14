@@ -1,35 +1,46 @@
 package cn.aaron911.netty.im.server.handler;
 
 import cn.aaron911.netty.im.protocol.Packet;
-import cn.aaron911.netty.im.server.handler.im.*;
 import cn.aaron911.netty.im.util.SessionUtil;
+import cn.hutool.core.util.ReflectUtil;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import org.reflections.Reflections;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-
-import static cn.aaron911.netty.im.protocol.command.Command.*;
+import java.util.Set;
 
 
 @ChannelHandler.Sharable
 public class IMHandler extends SimpleChannelInboundHandler<Packet> {
     public static final IMHandler INSTANCE = new IMHandler();
 
-    private Map<Byte, SimpleChannelInboundHandler<? extends Packet>> handlerMap;
+    private Map<Byte, SimpleChannelInboundHandler<? extends Packet>> handlerMap = new HashMap<>();
 
     private IMHandler() {
-        handlerMap = new HashMap<>();
-
-        handlerMap.put(MESSAGE_REQUEST, MessageRequestHandler.INSTANCE);
-        handlerMap.put(CREATE_GROUP_REQUEST, CreateGroupRequestHandler.INSTANCE);
-        handlerMap.put(JOIN_GROUP_REQUEST, JoinGroupRequestHandler.INSTANCE);
-        handlerMap.put(QUIT_GROUP_REQUEST, QuitGroupRequestHandler.INSTANCE);
-        handlerMap.put(LIST_GROUP_MEMBERS_REQUEST, ListGroupMembersRequestHandler.INSTANCE);
-        handlerMap.put(GROUP_MESSAGE_REQUEST, GroupMessageRequestHandler.INSTANCE);
-        handlerMap.put(LOGOUT_REQUEST, LogoutRequestHandler.INSTANCE);
+        Reflections reflections = new Reflections("cn.aaron911.netty.im.server.handler.im");
+        Set<Class<?>> typesAnnotatedWith = reflections.getTypesAnnotatedWith(HandlerAnnotation.class);
+        typesAnnotatedWith.forEach(x -> {
+            try {
+                Field field = ReflectUtil.getField(x, "INSTANCE");
+                Object instance = field.get(null);
+                if (null == instance || !(instance instanceof SimpleChannelInboundHandler)) {
+                    return;
+                }
+                Method getCommandMethod = ReflectUtil.getMethodByName(x, "getCommand");
+                Object getCommand = ReflectUtil.invoke(instance, getCommandMethod);
+                if (null != getCommand && getCommand instanceof Byte) {
+                    handlerMap.put((Byte) getCommand, (SimpleChannelInboundHandler<? extends Packet>) instance);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     @Override

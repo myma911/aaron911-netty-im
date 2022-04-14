@@ -1,8 +1,10 @@
 package cn.aaron911.netty.im.server.handler.im;
 
 
+import cn.aaron911.netty.im.protocol.ICommand;
 import cn.aaron911.netty.im.protocol.request.MessageRequestPacket;
 import cn.aaron911.netty.im.protocol.response.MessageResponsePacket;
+import cn.aaron911.netty.im.server.handler.HandlerAnnotation;
 import cn.aaron911.netty.im.session.Session;
 import cn.aaron911.netty.im.util.SessionUtil;
 import io.netty.channel.Channel;
@@ -10,9 +12,11 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
+import static cn.aaron911.netty.im.protocol.command.Command.MESSAGE_REQUEST;
 
+@HandlerAnnotation
 @ChannelHandler.Sharable
-public class MessageRequestHandler extends SimpleChannelInboundHandler<MessageRequestPacket> {
+public class MessageRequestHandler extends SimpleChannelInboundHandler<MessageRequestPacket> implements ICommand {
     public static final MessageRequestHandler INSTANCE = new MessageRequestHandler();
 
     private MessageRequestHandler() {
@@ -43,5 +47,10 @@ public class MessageRequestHandler extends SimpleChannelInboundHandler<MessageRe
         } else {
             System.err.println("[" + messageRequestPacket.getToUserId() + "] 不在线，发送失败!");
         }
+    }
+
+    @Override
+    public Byte getCommand() {
+        return MESSAGE_REQUEST;
     }
 }

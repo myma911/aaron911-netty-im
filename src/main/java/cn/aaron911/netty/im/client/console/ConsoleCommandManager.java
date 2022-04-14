@@ -25,9 +25,7 @@ public class ConsoleCommandManager implements ConsoleCommand {
                 ConsoleCommand consoleCommand = x.newInstance();
                 consoleCommandMap.put(consoleCommand.getCommand().toString(), consoleCommand);
                 consoleCommandMap.put(x.getSimpleName(), consoleCommand);
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         });

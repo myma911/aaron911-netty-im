@@ -1,17 +1,21 @@
 package cn.aaron911.netty.im.server.handler.im;
 
 
+import cn.aaron911.netty.im.protocol.ICommand;
 import cn.aaron911.netty.im.protocol.request.JoinGroupRequestPacket;
 import cn.aaron911.netty.im.protocol.response.JoinGroupResponsePacket;
+import cn.aaron911.netty.im.server.handler.HandlerAnnotation;
 import cn.aaron911.netty.im.util.SessionUtil;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.group.ChannelGroup;
 
+import static cn.aaron911.netty.im.protocol.command.Command.JOIN_GROUP_REQUEST;
 
+@HandlerAnnotation
 @ChannelHandler.Sharable
-public class JoinGroupRequestHandler extends SimpleChannelInboundHandler<JoinGroupRequestPacket> {
+public class JoinGroupRequestHandler extends SimpleChannelInboundHandler<JoinGroupRequestPacket> implements ICommand {
     public static final JoinGroupRequestHandler INSTANCE = new JoinGroupRequestHandler();
 
     private JoinGroupRequestHandler() {
@@ -30,5 +34,10 @@ public class JoinGroupRequestHandler extends SimpleChannelInboundHandler<JoinGro
         responsePacket.setSuccess(true);
         responsePacket.setGroupId(groupId);
         ctx.writeAndFlush(responsePacket);
+    }
+
+    @Override
+    public Byte getCommand() {
+        return JOIN_GROUP_REQUEST;
     }
 }
