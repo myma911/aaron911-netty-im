@@ -1,5 +1,6 @@
 package cn.aaron911.netty.im.server.handler;
 
+import cn.aaron911.netty.im.protocol.ICommand;
 import cn.aaron911.netty.im.protocol.Packet;
 import cn.aaron911.netty.im.util.SessionUtil;
 import cn.hutool.core.util.ReflectUtil;
@@ -17,15 +18,15 @@ import java.util.Set;
 
 
 @ChannelHandler.Sharable
-public class IMHandler extends SimpleChannelInboundHandler<Packet> {
-    public static final IMHandler INSTANCE = new IMHandler();
+public class ServiceImHandler extends SimpleChannelInboundHandler<Packet> {
+    public static final ServiceImHandler INSTANCE = new ServiceImHandler();
 
     private Map<Byte, SimpleChannelInboundHandler<? extends Packet>> handlerMap = new HashMap<>();
 
-    private IMHandler() {
+    private ServiceImHandler() {
         Reflections reflections = new Reflections("cn.aaron911.netty.im.server.handler.im");
-        Set<Class<?>> typesAnnotatedWith = reflections.getTypesAnnotatedWith(HandlerAnnotation.class);
-        typesAnnotatedWith.forEach(x -> {
+        Set<Class<? extends ICommand>> classSet = reflections.getSubTypesOf(ICommand.class);
+        classSet.forEach(x -> {
             try {
                 Field field = ReflectUtil.getField(x, "INSTANCE");
                 Object instance = field.get(null);

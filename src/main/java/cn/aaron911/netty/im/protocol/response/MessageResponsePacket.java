@@ -16,7 +16,6 @@ public class MessageResponsePacket extends Packet {
 
     @Override
     public Byte getCommand() {
-
         return MESSAGE_RESPONSE;
     }
 }

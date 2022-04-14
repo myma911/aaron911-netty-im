@@ -27,6 +27,6 @@ public class NettyServerInitializer extends ChannelInitializer<NioSocketChannel>
         // 再检测登录, 未登录后面不再执行
         pipeline.addLast(AuthHandler.INSTANCE);
         // 自定义消息处理
-        pipeline.addLast(IMHandler.INSTANCE);
+        pipeline.addLast(ServiceImHandler.INSTANCE);
     }
 }

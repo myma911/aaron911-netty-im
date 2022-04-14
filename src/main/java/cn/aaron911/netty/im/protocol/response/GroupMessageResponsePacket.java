@@ -18,7 +18,6 @@ public class GroupMessageResponsePacket extends Packet {
 
     @Override
     public Byte getCommand() {
-
         return GROUP_MESSAGE_RESPONSE;
     }
 }

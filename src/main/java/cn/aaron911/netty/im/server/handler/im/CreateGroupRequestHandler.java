@@ -4,7 +4,6 @@ package cn.aaron911.netty.im.server.handler.im;
 import cn.aaron911.netty.im.protocol.ICommand;
 import cn.aaron911.netty.im.protocol.request.CreateGroupRequestPacket;
 import cn.aaron911.netty.im.protocol.response.CreateGroupResponsePacket;
-import cn.aaron911.netty.im.server.handler.HandlerAnnotation;
 import cn.aaron911.netty.im.util.IDUtil;
 import cn.aaron911.netty.im.util.SessionUtil;
 import io.netty.channel.Channel;
@@ -19,7 +18,6 @@ import java.util.List;
 
 import static cn.aaron911.netty.im.protocol.command.Command.CREATE_GROUP_REQUEST;
 
-@HandlerAnnotation
 @ChannelHandler.Sharable
 public class CreateGroupRequestHandler extends SimpleChannelInboundHandler<CreateGroupRequestPacket> implements ICommand {
     public static final CreateGroupRequestHandler INSTANCE = new CreateGroupRequestHandler();

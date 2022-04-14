@@ -4,7 +4,6 @@ package cn.aaron911.netty.im.server.handler.im;
 import cn.aaron911.netty.im.protocol.ICommand;
 import cn.aaron911.netty.im.protocol.request.MessageRequestPacket;
 import cn.aaron911.netty.im.protocol.response.MessageResponsePacket;
-import cn.aaron911.netty.im.server.handler.HandlerAnnotation;
 import cn.aaron911.netty.im.session.Session;
 import cn.aaron911.netty.im.util.SessionUtil;
 import io.netty.channel.Channel;
@@ -14,13 +13,11 @@ import io.netty.channel.SimpleChannelInboundHandler;
 
 import static cn.aaron911.netty.im.protocol.command.Command.MESSAGE_REQUEST;
 
-@HandlerAnnotation
 @ChannelHandler.Sharable
 public class MessageRequestHandler extends SimpleChannelInboundHandler<MessageRequestPacket> implements ICommand {
     public static final MessageRequestHandler INSTANCE = new MessageRequestHandler();
 
-    private MessageRequestHandler() {
-    }
+    private MessageRequestHandler() {}
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, MessageRequestPacket messageRequestPacket) {

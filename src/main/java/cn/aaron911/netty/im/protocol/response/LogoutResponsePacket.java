@@ -16,7 +16,6 @@ public class LogoutResponsePacket extends Packet {
 
     @Override
     public Byte getCommand() {
-
         return LOGOUT_RESPONSE;
     }
 }

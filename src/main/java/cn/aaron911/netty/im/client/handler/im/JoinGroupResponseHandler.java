@@ -1,11 +1,14 @@
 package cn.aaron911.netty.im.client.handler.im;
 
+import cn.aaron911.netty.im.protocol.ICommand;
 import cn.aaron911.netty.im.protocol.response.JoinGroupResponsePacket;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
+import static cn.aaron911.netty.im.protocol.command.Command.JOIN_GROUP_RESPONSE;
 
-public class JoinGroupResponseHandler extends SimpleChannelInboundHandler<JoinGroupResponsePacket> {
+
+public class JoinGroupResponseHandler extends SimpleChannelInboundHandler<JoinGroupResponsePacket> implements ICommand {
 
     public static final JoinGroupResponseHandler INSTANCE = new JoinGroupResponseHandler();
 
@@ -20,5 +23,10 @@ public class JoinGroupResponseHandler extends SimpleChannelInboundHandler<JoinGr
         } else {
             System.err.println("加入群[" + responsePacket.getGroupId() + "]失败，原因为：" + responsePacket.getReason());
         }
+    }
+
+    @Override
+    public Byte getCommand() {
+        return JOIN_GROUP_RESPONSE;
     }
 }

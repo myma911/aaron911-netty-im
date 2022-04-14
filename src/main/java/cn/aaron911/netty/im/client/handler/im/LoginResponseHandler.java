@@ -1,14 +1,17 @@
 package cn.aaron911.netty.im.client.handler.im;
 
 
+import cn.aaron911.netty.im.protocol.ICommand;
 import cn.aaron911.netty.im.protocol.response.LoginResponsePacket;
 import cn.aaron911.netty.im.session.Session;
 import cn.aaron911.netty.im.util.SessionUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
+import static cn.aaron911.netty.im.protocol.command.Command.LOGIN_RESPONSE;
 
-public class LoginResponseHandler extends SimpleChannelInboundHandler<LoginResponsePacket> {
+
+public class LoginResponseHandler extends SimpleChannelInboundHandler<LoginResponsePacket> implements ICommand {
 
     public static final LoginResponseHandler INSTANCE = new LoginResponseHandler();
 
@@ -24,5 +27,10 @@ public class LoginResponseHandler extends SimpleChannelInboundHandler<LoginRespo
         } else {
             System.out.println("[" + userName + "]登录失败，原因：" + loginResponsePacket.getReason());
         }
+    }
+
+    @Override
+    public Byte getCommand() {
+        return LOGIN_RESPONSE;
     }
 }
