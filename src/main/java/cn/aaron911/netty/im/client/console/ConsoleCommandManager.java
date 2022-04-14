@@ -2,24 +2,35 @@ package cn.aaron911.netty.im.client.console;
 
 
 import cn.aaron911.netty.im.util.SessionUtil;
+import cn.hutool.core.util.ClassUtil;
 import io.netty.channel.Channel;
+import org.reflections.Reflections;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 
 public class ConsoleCommandManager implements ConsoleCommand {
-    private Map<String, ConsoleCommand> consoleCommandMap;
+    private Map<String, ConsoleCommand> consoleCommandMap = new HashMap<>();
 
     public ConsoleCommandManager() {
-        consoleCommandMap = new HashMap<>();
-        consoleCommandMap.put("sendToUser", new SendToUserConsoleCommand());
-        consoleCommandMap.put("logout", new LogoutConsoleCommand());
-        consoleCommandMap.put("createGroup", new CreateGroupConsoleCommand());
-        consoleCommandMap.put("joinGroup", new JoinGroupConsoleCommand());
-        consoleCommandMap.put("quitGroup", new QuitGroupConsoleCommand());
-        consoleCommandMap.put("listGroupMembers", new ListGroupMembersConsoleCommand());
-        consoleCommandMap.put("sendToGroup", new SendToGroupConsoleCommand());
+        Reflections reflections = new Reflections("cn.aaron911.netty.im.client.console");
+        Set<Class<? extends ConsoleCommand>> subTypes = reflections.getSubTypesOf(ConsoleCommand.class);
+        subTypes.forEach(x -> {
+            if ("ConsoleCommandManager".equals(x.getSimpleName())) {
+                return;
+            }
+            try {
+                ConsoleCommand consoleCommand = x.newInstance();
+                consoleCommandMap.put(consoleCommand.getCommand().toString(), consoleCommand);
+                consoleCommandMap.put(x.getSimpleName(), consoleCommand);
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     @Override
@@ -30,6 +41,7 @@ public class ConsoleCommandManager implements ConsoleCommand {
         if (!SessionUtil.hasLogin(channel)) {
             return;
         }
+        String nextLine = scanner.nextLine();
 
         ConsoleCommand consoleCommand = consoleCommandMap.get(command);
 
@@ -38,5 +50,10 @@ public class ConsoleCommandManager implements ConsoleCommand {
         } else {
             System.err.println("无法识别[" + command + "]指令，请重新输入!");
         }
+    }
+
+    @Override
+    public Byte getCommand() {
+        return null;
     }
 }

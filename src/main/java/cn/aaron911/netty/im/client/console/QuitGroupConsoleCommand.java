@@ -5,6 +5,8 @@ import io.netty.channel.Channel;
 
 import java.util.Scanner;
 
+import static cn.aaron911.netty.im.protocol.command.Command.QUIT_GROUP_REQUEST;
+
 public class QuitGroupConsoleCommand implements ConsoleCommand {
     @Override
     public void exec(Scanner scanner, Channel channel) {
@@ -15,5 +17,10 @@ public class QuitGroupConsoleCommand implements ConsoleCommand {
 
         quitGroupRequestPacket.setGroupId(groupId);
         channel.writeAndFlush(quitGroupRequestPacket);
+    }
+
+    @Override
+    public Byte getCommand() {
+        return QUIT_GROUP_REQUEST;
     }
 }

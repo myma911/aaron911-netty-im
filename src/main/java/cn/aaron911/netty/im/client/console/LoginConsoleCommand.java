@@ -6,6 +6,8 @@ import io.netty.channel.Channel;
 
 import java.util.Scanner;
 
+import static cn.aaron911.netty.im.protocol.command.Command.LOGIN_REQUEST;
+
 public class LoginConsoleCommand implements ConsoleCommand {
 
     @Override
@@ -19,6 +21,11 @@ public class LoginConsoleCommand implements ConsoleCommand {
         // 发送登录数据包
         channel.writeAndFlush(loginRequestPacket);
         waitForLoginResponse(channel);
+    }
+
+    @Override
+    public Byte getCommand() {
+        return LOGIN_REQUEST;
     }
 
     private static void waitForLoginResponse(Channel channel) {

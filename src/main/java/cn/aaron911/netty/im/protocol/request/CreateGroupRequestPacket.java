@@ -1,7 +1,6 @@
 package cn.aaron911.netty.im.protocol.request;
 
 import cn.aaron911.netty.im.protocol.Packet;
-
 import lombok.Data;
 
 import java.util.List;
@@ -16,7 +15,6 @@ public class CreateGroupRequestPacket extends Packet {
 
     @Override
     public Byte getCommand() {
-
         return CREATE_GROUP_REQUEST;
     }
 }

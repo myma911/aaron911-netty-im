@@ -18,7 +18,6 @@ public class CreateGroupResponsePacket extends Packet {
 
     @Override
     public Byte getCommand() {
-
         return CREATE_GROUP_RESPONSE;
     }
 }

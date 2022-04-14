@@ -5,6 +5,8 @@ import io.netty.channel.Channel;
 
 import java.util.Scanner;
 
+import static cn.aaron911.netty.im.protocol.command.Command.JOIN_GROUP_REQUEST;
+
 public class JoinGroupConsoleCommand implements ConsoleCommand {
     @Override
     public void exec(Scanner scanner, Channel channel) {
@@ -15,5 +17,10 @@ public class JoinGroupConsoleCommand implements ConsoleCommand {
 
         joinGroupRequestPacket.setGroupId(groupId);
         channel.writeAndFlush(joinGroupRequestPacket);
+    }
+
+    @Override
+    public Byte getCommand() {
+        return JOIN_GROUP_REQUEST;
     }
 }

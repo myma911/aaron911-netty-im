@@ -6,6 +6,8 @@ import io.netty.channel.Channel;
 import java.util.Arrays;
 import java.util.Scanner;
 
+import static cn.aaron911.netty.im.protocol.command.Command.CREATE_GROUP_REQUEST;
+
 public class CreateGroupConsoleCommand implements ConsoleCommand {
 
     private static final String USER_ID_SPLITER = ",";
@@ -18,6 +20,11 @@ public class CreateGroupConsoleCommand implements ConsoleCommand {
         String userIds = scanner.next();
         createGroupRequestPacket.setUserIdList(Arrays.asList(userIds.split(USER_ID_SPLITER)));
         channel.writeAndFlush(createGroupRequestPacket);
+    }
+
+    @Override
+    public Byte getCommand() {
+        return CREATE_GROUP_REQUEST;
     }
 
 }

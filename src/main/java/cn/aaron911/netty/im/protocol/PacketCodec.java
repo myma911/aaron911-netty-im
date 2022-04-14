@@ -1,14 +1,15 @@
 package cn.aaron911.netty.im.protocol;
 
-import cn.aaron911.netty.im.protocol.request.*;
-import cn.aaron911.netty.im.protocol.response.*;
 import cn.aaron911.netty.im.serialize.Serializer;
 import cn.aaron911.netty.im.serialize.impl.JSONSerializer;
+import cn.hutool.core.util.ClassUtil;
+import cn.hutool.core.util.ReflectUtil;
 import io.netty.buffer.ByteBuf;
+import org.reflections.Reflections;
+
 import java.util.HashMap;
 import java.util.Map;
-import static cn.aaron911.netty.im.protocol.command.Command.*;
-
+import java.util.Set;
 
 
 /**
@@ -36,34 +37,37 @@ public class PacketCodec {
     public static final int MAGIC_NUMBER = 0x12345678;
     public static final PacketCodec INSTANCE = new PacketCodec();
 
-    private final Map<Byte, Class<? extends Packet>> packetTypeMap;
-    private final Map<Byte, Serializer> serializerMap;
+    private final Map<Byte, Class<? extends Packet>> packetTypeMap = new HashMap<>();
+    private final Map<Byte, Serializer> serializerMap = new HashMap<>();
+
 
 
     private PacketCodec() {
-        packetTypeMap = new HashMap<>();
-        packetTypeMap.put(LOGIN_REQUEST, LoginRequestPacket.class);
-        packetTypeMap.put(LOGIN_RESPONSE, LoginResponsePacket.class);
-        packetTypeMap.put(MESSAGE_REQUEST, MessageRequestPacket.class);
-        packetTypeMap.put(MESSAGE_RESPONSE, MessageResponsePacket.class);
-        packetTypeMap.put(LOGOUT_REQUEST, LogoutRequestPacket.class);
-        packetTypeMap.put(LOGOUT_RESPONSE, LogoutResponsePacket.class);
-        packetTypeMap.put(CREATE_GROUP_REQUEST, CreateGroupRequestPacket.class);
-        packetTypeMap.put(CREATE_GROUP_RESPONSE, CreateGroupResponsePacket.class);
-        packetTypeMap.put(JOIN_GROUP_REQUEST, JoinGroupRequestPacket.class);
-        packetTypeMap.put(JOIN_GROUP_RESPONSE, JoinGroupResponsePacket.class);
-        packetTypeMap.put(QUIT_GROUP_REQUEST, QuitGroupRequestPacket.class);
-        packetTypeMap.put(QUIT_GROUP_RESPONSE, QuitGroupResponsePacket.class);
-        packetTypeMap.put(LIST_GROUP_MEMBERS_REQUEST, ListGroupMembersRequestPacket.class);
-        packetTypeMap.put(LIST_GROUP_MEMBERS_RESPONSE, ListGroupMembersResponsePacket.class);
-        packetTypeMap.put(GROUP_MESSAGE_REQUEST, GroupMessageRequestPacket.class);
-        packetTypeMap.put(GROUP_MESSAGE_RESPONSE, GroupMessageResponsePacket.class);
-        packetTypeMap.put(HEARTBEAT_REQUEST, HeartBeatRequestPacket.class);
-        packetTypeMap.put(HEARTBEAT_RESPONSE, HeartBeatResponsePacket.class);
+        Reflections reflections = new Reflections("cn.aaron911.netty.im.protocol.request");
+        handleReflectionss(reflections);
 
-        serializerMap = new HashMap<>();
+        reflections = new Reflections("cn.aaron911.netty.im.protocol.response");
+        handleReflectionss(reflections);
+
         Serializer serializer = new JSONSerializer();
         serializerMap.put(serializer.getSerializerAlgorithm(), serializer);
+    }
+
+    private void handleReflectionss(Reflections reflections) {
+        Set<Class<? extends Packet>> subTypes = reflections.getSubTypesOf(Packet.class);
+        for (Class<? extends Packet> clazz : subTypes) {
+            try {
+                Packet instance = clazz.newInstance();
+                Byte command = instance.getCommand();
+                packetTypeMap.put(command, clazz);
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        }
     }
 
     public void encode(ByteBuf byteBuf, Packet packet) {
@@ -81,10 +85,11 @@ public class PacketCodec {
 
 
     public Packet decode(ByteBuf byteBuf) {
-        // 跳过 magic number
-        byteBuf.skipBytes(4);
-        // 跳过版本号
-        byteBuf.skipBytes(1);
+        // magic number
+        byte[] magicNumber = new byte[4];
+        byteBuf.readBytes(magicNumber);
+        // 版本号
+        byte version = byteBuf.readByte();
         // 序列化算法
         byte serializeAlgorithm = byteBuf.readByte();
         // 指令
@@ -95,11 +100,11 @@ public class PacketCodec {
         byte[] bytes = new byte[length];
         byteBuf.readBytes(bytes);
 
-        Class<? extends Packet> requestType = getRequestType(command);
+        Class<? extends Packet> responseClazz = getRequestType(command);
         Serializer serializer = getSerializer(serializeAlgorithm);
 
-        if (requestType != null && serializer != null) {
-            return serializer.deserialize(requestType, bytes);
+        if (responseClazz != null && serializer != null) {
+            return serializer.deserialize(responseClazz, bytes);
         }
 
         return null;

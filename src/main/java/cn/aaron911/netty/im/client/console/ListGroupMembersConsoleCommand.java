@@ -5,6 +5,8 @@ import io.netty.channel.Channel;
 
 import java.util.Scanner;
 
+import static cn.aaron911.netty.im.protocol.command.Command.LIST_GROUP_MEMBERS_REQUEST;
+
 public class ListGroupMembersConsoleCommand implements ConsoleCommand {
 
     @Override
@@ -16,5 +18,10 @@ public class ListGroupMembersConsoleCommand implements ConsoleCommand {
 
         listGroupMembersRequestPacket.setGroupId(groupId);
         channel.writeAndFlush(listGroupMembersRequestPacket);
+    }
+
+    @Override
+    public Byte getCommand() {
+        return LIST_GROUP_MEMBERS_REQUEST;
     }
 }
