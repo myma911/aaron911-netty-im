@@ -5,7 +5,12 @@ import cn.aaron911.netty.im.protocol.ICommand;
 import cn.aaron911.netty.im.protocol.request.FileTransferUploadRequestPacket;
 import cn.aaron911.netty.im.protocol.response.FileTransferUploadResponsePacket;
 import cn.aaron911.netty.im.session.Session;
+import cn.aaron911.netty.im.util.persistence.ImFileCacheUtil;
 import cn.aaron911.netty.im.util.SessionUtil;
+import cn.aaron911.netty.im.util.persistence.ImFileSession;
+import cn.aaron911.netty.im.util.persistence.ImFileGlobal;
+import cn.aaron911.netty.im.util.persistence.ImFileState;
+import cn.hutool.core.io.FileUtil;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -21,24 +26,63 @@ public class FileTransferUploadRequestHandler extends SimpleChannelInboundHandle
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FileTransferUploadRequestPacket fileTransferUploadRequestPacket) {
-        // 1.拿到消息发送方的会话信息
-        Session session = SessionUtil.getSession(ctx.channel());
+        //
+        Channel channel = ctx.channel();
+        // 要上传的文件的md5
+        String md5Hex = fileTransferUploadRequestPacket.getMd5Hex();
 
-        String toUserId = fileTransferUploadRequestPacket.getToUserId();
+        // 查看全局服务端是否存在该文件
+        ImFileGlobal imFileGlobal = ImFileCacheUtil.get(md5Hex);
 
-        Session toUserSession = SessionUtil.getSession(toUserId);
-
-        if (null == toUserSession) {
-            // 2. 要发送的用户不在线，通过消息发送方的会话信息构造要发送的消息
-            FileTransferUploadResponsePacket fileTransferUploadResponsePacket = new FileTransferUploadResponsePacket();
-
-            // 3.拿到消息接收方的 channel
-            Channel channel = ctx.channel();
-            // 4.将消息发送给消息接收方
+        if (null != imFileGlobal){
+            // 给客户端响应
+            FileTransferUploadResponsePacket fileTransferUploadResponsePacket = FileTransferUploadResponsePacket.builder()
+                    .status(ImFileState.COMPLETE)
+                    .md5Hex(md5Hex)
+                    .build();
             channel.writeAndFlush(fileTransferUploadResponsePacket);
-
             return;
         }
+
+        // 查看会话中文件是否存在
+        Session session = SessionUtil.getSession(channel);
+        ImFileSession imFileSessionInSession = session.getFileMap().get(md5Hex);
+        if (null == imFileSessionInSession){
+            // 存储在会话中
+            // TODO... 服务器端存储路径
+            String serverFileUrl = "/xxx/" + md5Hex + ".xxx";
+            FileUtil.newFile(serverFileUrl);
+            imFileSessionInSession = ImFileSession.builder()
+                    .status(ImFileState.BEGIN)
+                    .readPosition(0)
+                    .fileName(fileTransferUploadRequestPacket.getFileName())
+                    .fileSize(fileTransferUploadRequestPacket.getFileSize())
+                    .fileUrl(fileTransferUploadRequestPacket.getFileUrl())
+                    .serverFileUrl(serverFileUrl)
+                    .md5Hex(fileTransferUploadRequestPacket.getMd5Hex())
+                    .build();
+            session.getFileMap().put(md5Hex, imFileSessionInSession);
+
+            // 给客户端响应
+            FileTransferUploadResponsePacket fileTransferUploadResponsePacket = FileTransferUploadResponsePacket.builder()
+                    .status(ImFileState.BEGIN)
+                    .readPosition(0)
+                    .fileUrl(fileTransferUploadRequestPacket.getFileUrl())
+                    .build();
+            channel.writeAndFlush(fileTransferUploadResponsePacket);
+            return;
+        }
+
+        // 给客户端响应
+        FileTransferUploadResponsePacket fileTransferUploadResponsePacket = FileTransferUploadResponsePacket.builder()
+                .status(ImFileState.CENTER)
+                .fileUrl(imFileSessionInSession.getFileUrl())
+                .status(imFileSessionInSession.getStatus())
+                .readPosition(imFileSessionInSession.getReadPosition())
+                .md5Hex(imFileSessionInSession.getMd5Hex())
+                .build();
+        channel.writeAndFlush(fileTransferUploadResponsePacket);
+        return;
     }
 
     @Override

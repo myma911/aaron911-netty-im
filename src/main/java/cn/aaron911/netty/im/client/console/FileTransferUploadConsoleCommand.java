@@ -1,7 +1,6 @@
 package cn.aaron911.netty.im.client.console;
 
 import cn.aaron911.netty.im.protocol.request.FileTransferUploadRequestPacket;
-import cn.aaron911.netty.im.protocol.request.MessageRequestPacket;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
@@ -31,8 +30,8 @@ public class FileTransferUploadConsoleCommand implements ConsoleCommand {
             return;
         }
         String md5Hex = DigestUtil.md5Hex(file);
-        FileTransferUploadRequestPacket requestPacket = FileTransferUploadRequestPacket.builder().toUserId(toUserId).fileName(file.getName()).fileSize(file.length())
-                .fileUrl(fileUrl).md5Hex(md5Hex).build();
+        FileTransferUploadRequestPacket requestPacket = FileTransferUploadRequestPacket.builder().toUserId(toUserId)
+                .fileUrl(fileUrl).fileName(file.getName()).fileSize(file.length()).md5Hex(md5Hex).build();
         channel.writeAndFlush(requestPacket);
     }
 

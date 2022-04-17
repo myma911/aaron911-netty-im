@@ -1,21 +1,26 @@
 package cn.aaron911.netty.im.protocol.request;
 
 import cn.aaron911.netty.im.protocol.Packet;
+import cn.aaron911.netty.im.util.persistence.ImFileState;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import static cn.aaron911.netty.im.protocol.command.Command.FILE_TRANSFER_UPLOAD_DATA_REQUEST;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class FileTransferUploadDataRequestPacket extends Packet {
 
+    private String md5Hex;
+
     /**
      * 客户端文件地址
      */
-    private String fileUrl;
+    //private String fileUrl;
 
     /**
      * 文件名称
@@ -40,7 +45,7 @@ public class FileTransferUploadDataRequestPacket extends Packet {
     /**
      * 0开始、1中间、2结尾、3完成
      */
-    private Integer status;
+    private ImFileState status;
 
     @Override
     public Byte getCommand() {
