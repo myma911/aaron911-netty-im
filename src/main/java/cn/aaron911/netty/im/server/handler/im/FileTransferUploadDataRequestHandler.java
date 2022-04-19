@@ -3,9 +3,10 @@ package cn.aaron911.netty.im.server.handler.im;
 
 import cn.aaron911.netty.im.protocol.ICommand;
 import cn.aaron911.netty.im.protocol.request.FileTransferUploadDataRequestPacket;
+import cn.aaron911.netty.im.protocol.response.FileTransferDownloadResponsePacket;
 import cn.aaron911.netty.im.protocol.response.FileTransferUploadResponsePacket;
-import cn.aaron911.netty.im.session.Session;
-import cn.aaron911.netty.im.util.SessionUtil;
+import cn.aaron911.netty.im.util.session.Session;
+import cn.aaron911.netty.im.util.session.SessionUtil;
 import cn.aaron911.netty.im.util.persistence.*;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
@@ -88,8 +89,15 @@ public class FileTransferUploadDataRequestHandler extends SimpleChannelInboundHa
                     if (null == toUserChannel) {
                         System.out.println("用户不在线");
                     }
-                    // TODO ... 给用户发文件
 
+                    // 给用户发文件源信息
+                    FileTransferDownloadResponsePacket fileTransferDownloadResponsePacket = FileTransferDownloadResponsePacket.builder()
+                            .md5Hex(md5Hex)
+                            .fileName(imFileSession.getFileName())
+                            .fileSize(imFileGlobal.getFileSize())
+                            .fromSession(session)
+                            .build();
+                    toUserChannel.writeAndFlush(fileTransferDownloadResponsePacket);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected value: " + status);

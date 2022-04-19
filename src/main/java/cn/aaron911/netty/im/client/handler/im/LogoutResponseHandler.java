@@ -2,7 +2,7 @@ package cn.aaron911.netty.im.client.handler.im;
 
 import cn.aaron911.netty.im.protocol.ICommand;
 import cn.aaron911.netty.im.protocol.response.LogoutResponsePacket;
-import cn.aaron911.netty.im.util.SessionUtil;
+import cn.aaron911.netty.im.util.session.SessionUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 

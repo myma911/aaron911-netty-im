@@ -5,7 +5,7 @@ import cn.aaron911.netty.im.protocol.ICommand;
 import cn.aaron911.netty.im.protocol.request.CreateGroupRequestPacket;
 import cn.aaron911.netty.im.protocol.response.CreateGroupResponsePacket;
 import cn.aaron911.netty.im.util.IDUtil;
-import cn.aaron911.netty.im.util.SessionUtil;
+import cn.aaron911.netty.im.util.session.SessionUtil;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;

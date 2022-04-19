@@ -13,7 +13,7 @@ import static cn.aaron911.netty.im.protocol.command.Command.FILE_TRANSFER_DOWNLO
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FileTransferDownloadResponsePacket extends Packet {
+public class FileTransferDownloadNoticeResponsePacket extends Packet {
 
     private Session fromSession;
 

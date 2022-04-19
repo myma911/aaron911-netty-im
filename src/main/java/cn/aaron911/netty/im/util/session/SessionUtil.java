@@ -1,8 +1,7 @@
-package cn.aaron911.netty.im.util;
+package cn.aaron911.netty.im.util.session;
 
 
 import cn.aaron911.netty.im.attribute.Attributes;
-import cn.aaron911.netty.im.session.Session;
 import io.netty.channel.Channel;
 import io.netty.channel.group.ChannelGroup;
 

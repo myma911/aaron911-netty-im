@@ -1,6 +1,6 @@
 package cn.aaron911.netty.im.attribute;
 
-import cn.aaron911.netty.im.session.Session;
+import cn.aaron911.netty.im.util.session.Session;
 import io.netty.util.AttributeKey;
 
 

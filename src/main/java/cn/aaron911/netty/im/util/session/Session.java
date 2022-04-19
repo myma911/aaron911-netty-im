@@ -1,4 +1,4 @@
-package cn.aaron911.netty.im.session;
+package cn.aaron911.netty.im.util.session;
 
 import cn.aaron911.netty.im.util.persistence.ImFileSession;
 import cn.hutool.core.util.StrUtil;
@@ -20,6 +20,10 @@ public class Session {
 
     public Map<String, ImFileSession> getFileMap() {
         return fileMap;
+    }
+
+    public String getUserId() {
+        return userId;
     }
 
     public String getUserName() {

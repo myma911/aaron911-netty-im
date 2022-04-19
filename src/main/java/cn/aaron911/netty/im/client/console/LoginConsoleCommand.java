@@ -1,7 +1,7 @@
 package cn.aaron911.netty.im.client.console;
 
 import cn.aaron911.netty.im.protocol.request.LoginRequestPacket;
-import cn.aaron911.netty.im.util.SessionUtil;
+import cn.aaron911.netty.im.util.session.SessionUtil;
 import io.netty.channel.Channel;
 
 import java.util.Scanner;

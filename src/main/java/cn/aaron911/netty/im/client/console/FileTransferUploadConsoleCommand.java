@@ -9,7 +9,7 @@ import io.netty.channel.Channel;
 import java.io.File;
 import java.util.Scanner;
 
-import static cn.aaron911.netty.im.protocol.command.Command.MESSAGE_REQUEST;
+import static cn.aaron911.netty.im.protocol.command.Command.FILE_TRANSFER_UPLOAD_REQUEST;
 
 public class FileTransferUploadConsoleCommand implements ConsoleCommand {
     
@@ -37,6 +37,6 @@ public class FileTransferUploadConsoleCommand implements ConsoleCommand {
 
     @Override
     public Byte getCommand() {
-        return MESSAGE_REQUEST;
+        return FILE_TRANSFER_UPLOAD_REQUEST;
     }
 }

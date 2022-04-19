@@ -22,8 +22,7 @@ public class FileTransferUploadResponseHandler extends SimpleChannelInboundHandl
 
     public int buff_size = 1024 * 10;
 
-    protected FileTransferUploadResponseHandler() {
-    }
+    protected FileTransferUploadResponseHandler() {}
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FileTransferUploadResponsePacket fileTransferUploadResponse) throws Exception {

@@ -2,7 +2,7 @@ package cn.aaron911.netty.im.server.handler;
 
 import cn.aaron911.netty.im.protocol.ICommand;
 import cn.aaron911.netty.im.protocol.Packet;
-import cn.aaron911.netty.im.util.SessionUtil;
+import cn.aaron911.netty.im.util.session.SessionUtil;
 import cn.hutool.core.util.ReflectUtil;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;

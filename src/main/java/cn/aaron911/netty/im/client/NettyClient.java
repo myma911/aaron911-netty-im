@@ -4,7 +4,7 @@ package cn.aaron911.netty.im.client;
 import cn.aaron911.netty.im.client.console.ConsoleCommandManager;
 import cn.aaron911.netty.im.client.console.LoginConsoleCommand;
 import cn.aaron911.netty.im.client.property.ClientProperty;
-import cn.aaron911.netty.im.util.SessionUtil;
+import cn.aaron911.netty.im.util.session.SessionUtil;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;

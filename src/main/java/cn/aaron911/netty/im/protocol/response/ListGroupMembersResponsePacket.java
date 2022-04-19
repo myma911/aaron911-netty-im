@@ -2,7 +2,7 @@ package cn.aaron911.netty.im.protocol.response;
 
 
 import cn.aaron911.netty.im.protocol.Packet;
-import cn.aaron911.netty.im.session.Session;
+import cn.aaron911.netty.im.util.session.Session;
 import lombok.Data;
 import java.util.List;
 

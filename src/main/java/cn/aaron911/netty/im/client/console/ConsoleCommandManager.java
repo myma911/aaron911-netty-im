@@ -1,8 +1,7 @@
 package cn.aaron911.netty.im.client.console;
 
 
-import cn.aaron911.netty.im.util.SessionUtil;
-import cn.hutool.core.util.ClassUtil;
+import cn.aaron911.netty.im.util.session.SessionUtil;
 import io.netty.channel.Channel;
 import org.reflections.Reflections;
 
