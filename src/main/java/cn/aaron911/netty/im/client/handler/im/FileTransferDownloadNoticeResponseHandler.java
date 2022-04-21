@@ -3,13 +3,14 @@ package cn.aaron911.netty.im.client.handler.im;
 import cn.aaron911.netty.im.protocol.ICommand;
 import cn.aaron911.netty.im.protocol.response.FileTransferDownloadNoticeResponsePacket;
 import cn.aaron911.netty.im.util.persistence.ImFileSession;
+import cn.aaron911.netty.im.util.persistence.ImFileState;
 import cn.aaron911.netty.im.util.session.Session;
 import cn.aaron911.netty.im.util.session.SessionUtil;
 import cn.hutool.core.util.StrUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
-import static cn.aaron911.netty.im.protocol.command.Command.FILE_TRANSFER_DOWNLOAD_RESPONSE;
+import static cn.aaron911.netty.im.protocol.command.Command.FILE_TRANSFER_DOWNLOAD_NOTICE_RESPONSE;
 
 
 public class FileTransferDownloadNoticeResponseHandler extends SimpleChannelInboundHandler<FileTransferDownloadNoticeResponsePacket> implements ICommand {
@@ -30,6 +31,8 @@ public class FileTransferDownloadNoticeResponseHandler extends SimpleChannelInbo
                 .md5Hex(md5Hex)
                 .fileSize(fileSize)
                 .fileName(fileName)
+                .status(ImFileState.BEGIN)
+                .readPosition(0)
                 .build();
         session.getFileMap().put(md5Hex, imFileSession);
     }
@@ -38,6 +41,6 @@ public class FileTransferDownloadNoticeResponseHandler extends SimpleChannelInbo
 
     @Override
     public Byte getCommand() {
-        return FILE_TRANSFER_DOWNLOAD_RESPONSE;
+        return FILE_TRANSFER_DOWNLOAD_NOTICE_RESPONSE;
     }
 }

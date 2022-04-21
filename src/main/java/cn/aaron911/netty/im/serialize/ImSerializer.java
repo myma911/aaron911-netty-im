@@ -1,9 +1,6 @@
 package cn.aaron911.netty.im.serialize;
 
-import cn.aaron911.netty.im.serialize.impl.JSONSerializer;
-
-public interface Serializer {
-    Serializer DEFAULT = new JSONSerializer();
+public interface ImSerializer {
 
     /**
      * 序列化算法

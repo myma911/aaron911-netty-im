@@ -1,12 +1,12 @@
 package cn.aaron911.netty.im.serialize.impl;
 
-import cn.aaron911.netty.im.serialize.Serializer;
+import cn.aaron911.netty.im.serialize.ImSerializer;
 import cn.aaron911.netty.im.serialize.SerializerAlgorithm;
 import com.alibaba.fastjson.JSON;
 
 
 
-public class JSONSerializer implements Serializer {
+public class JSONSerializer implements ImSerializer {
 
     @Override
     public byte getSerializerAlgorithm() {
@@ -20,7 +20,6 @@ public class JSONSerializer implements Serializer {
 
     @Override
     public <T> T deserialize(Class<T> clazz, byte[] bytes) {
-
         return JSON.parseObject(bytes, clazz);
     }
 }

@@ -16,6 +16,7 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
+import static cn.aaron911.netty.im.protocol.command.Command.FILE_TRANSFER_UPLOAD_REQUEST;
 import static cn.aaron911.netty.im.protocol.command.Command.MESSAGE_REQUEST;
 
 @ChannelHandler.Sharable
@@ -57,7 +58,7 @@ public class FileTransferUploadRequestHandler extends SimpleChannelInboundHandle
                     .readPosition(0)
                     .fileName(fileTransferUploadRequestPacket.getFileName())
                     .fileSize(fileTransferUploadRequestPacket.getFileSize())
-                    .fileUrl(fileTransferUploadRequestPacket.getFileUrl())
+                    .clientFileDir(fileTransferUploadRequestPacket.getClientFileDir())
                     .serverFileUrl(serverFileUrl)
                     .md5Hex(fileTransferUploadRequestPacket.getMd5Hex())
                     .build();
@@ -67,7 +68,8 @@ public class FileTransferUploadRequestHandler extends SimpleChannelInboundHandle
             FileTransferUploadResponsePacket fileTransferUploadResponsePacket = FileTransferUploadResponsePacket.builder()
                     .status(ImFileState.BEGIN)
                     .readPosition(0)
-                    .fileUrl(fileTransferUploadRequestPacket.getFileUrl())
+                    .clientFileDir(fileTransferUploadRequestPacket.getClientFileDir())
+                    .fileName(fileTransferUploadRequestPacket.getFileName())
                     .build();
             channel.writeAndFlush(fileTransferUploadResponsePacket);
             return;
@@ -76,7 +78,8 @@ public class FileTransferUploadRequestHandler extends SimpleChannelInboundHandle
         // 给客户端响应
         FileTransferUploadResponsePacket fileTransferUploadResponsePacket = FileTransferUploadResponsePacket.builder()
                 .status(ImFileState.CENTER)
-                .fileUrl(imFileSessionInSession.getFileUrl())
+                .clientFileDir(imFileSessionInSession.getClientFileDir())
+                .fileName(imFileSessionInSession.getFileName())
                 .status(imFileSessionInSession.getStatus())
                 .readPosition(imFileSessionInSession.getReadPosition())
                 .md5Hex(imFileSessionInSession.getMd5Hex())
@@ -87,6 +90,6 @@ public class FileTransferUploadRequestHandler extends SimpleChannelInboundHandle
 
     @Override
     public Byte getCommand() {
-        return MESSAGE_REQUEST;
+        return FILE_TRANSFER_UPLOAD_REQUEST;
     }
 }

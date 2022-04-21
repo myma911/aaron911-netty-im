@@ -91,6 +91,7 @@ public class ClientImHandler extends SimpleChannelInboundHandler<Packet> {
      */
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        cause.printStackTrace();
         super.exceptionCaught(ctx, cause);
         Channel channel = ctx.channel();
         if(channel.isActive()){

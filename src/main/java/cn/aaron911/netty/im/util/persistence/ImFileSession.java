@@ -10,7 +10,7 @@ public class ImFileSession {
     /**
      * 客户端文件地址
      */
-    private String fileUrl;
+    private String clientFileDir;
 
     /**
      * 服务端文件地址

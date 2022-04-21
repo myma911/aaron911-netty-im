@@ -15,13 +15,13 @@ public class NettyServerInitializer extends ChannelInitializer<NioSocketChannel>
     protected void initChannel(NioSocketChannel ch) throws Exception {
         final ChannelPipeline pipeline = ch.pipeline();
         // 空闲检测
-        pipeline.addLast(new ServerIdleStateHandler());
+        //pipeline.addLast(new ServerIdleStateHandler());
 
         pipeline.addLast(new Spliter());
 
         pipeline.addLast(PacketCodecHandler.INSTANCE);
         // 心跳响应
-        pipeline.addLast(HeartBeatRequestHandler.INSTANCE);
+        //pipeline.addLast(HeartBeatRequestHandler.INSTANCE);
         // 必须先登录
         ch.pipeline().addLast(LoginRequestHandler.INSTANCE);
         // 再检测登录, 未登录后面不再执行

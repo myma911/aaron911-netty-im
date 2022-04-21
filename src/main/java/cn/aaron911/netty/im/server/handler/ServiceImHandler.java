@@ -52,8 +52,8 @@ public class ServiceImHandler extends SimpleChannelInboundHandler<Packet> {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        //super.exceptionCaught(ctx, cause);
-        System.out.println(cause.getMessage());
+        cause.printStackTrace();
+        super.exceptionCaught(ctx, cause);
         Channel channel = ctx.channel();
         if(channel.isActive()){
             ctx.close();

@@ -13,6 +13,7 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
+import static cn.aaron911.netty.im.protocol.command.Command.FILE_TRANSFER_UPLOAD_DATA_REQUEST;
 import static cn.aaron911.netty.im.protocol.command.Command.MESSAGE_REQUEST;
 
 @ChannelHandler.Sharable
@@ -33,14 +34,15 @@ public class FileTransferUploadDataRequestHandler extends SimpleChannelInboundHa
         String md5Hex = fileTransferUploadDataRequestPacket.getMd5Hex();
         Session session = SessionUtil.getSession(channel);
         ImFileSession imFileSession = session.getFileMap().get(md5Hex);
+        Integer beginPos = fileTransferUploadDataRequestPacket.getBeginPos();
+        byte[] bytes = fileTransferUploadDataRequestPacket.getBytes();
 
         try {
             switch (status){
                 case BEGIN:
-
                 case CENTER:
                     // 服务端写文件
-                    ImFileUtil.writeFile(imFileSession.getServerFileUrl(), fileTransferUploadDataRequestPacket);
+                    ImFileUtil.writeFile(imFileSession.getServerFileUrl(), beginPos, bytes);
 
                     // 更新会话
                     imFileSession.setStatus(ImFileState.CENTER);
@@ -50,7 +52,8 @@ public class FileTransferUploadDataRequestHandler extends SimpleChannelInboundHa
                     // 给客户端响应
                     FileTransferUploadResponsePacket fileTransferUploadResponsePacket = FileTransferUploadResponsePacket.builder()
                             .status(ImFileState.CENTER)
-                            .fileUrl(imFileSession.getFileUrl())
+                            .clientFileDir(imFileSession.getClientFileDir())
+                            .fileName(imFileSession.getFileName())
                             .status(imFileSession.getStatus())
                             .readPosition(imFileSession.getReadPosition())
                             .md5Hex(imFileSession.getMd5Hex())
@@ -59,7 +62,7 @@ public class FileTransferUploadDataRequestHandler extends SimpleChannelInboundHa
                     break;
                 case END:
                     // 服务端写文件
-                    ImFileUtil.writeFile(imFileSession.getServerFileUrl(), fileTransferUploadDataRequestPacket);
+                    ImFileUtil.writeFile(imFileSession.getServerFileUrl(), beginPos, bytes);
 
                     // 更新会话
                     imFileSession.setStatus(ImFileState.COMPLETE);
@@ -103,15 +106,16 @@ public class FileTransferUploadDataRequestHandler extends SimpleChannelInboundHa
                     throw new IllegalStateException("Unexpected value: " + status);
             }
         } catch (IllegalStateException e) {
+            e.printStackTrace();
             // TODO ... 暂不支持的状态
         } catch (Exception e) {
             // TODO。。。 系统异常了
+            e.printStackTrace();
         }
-
     }
 
     @Override
     public Byte getCommand() {
-        return MESSAGE_REQUEST;
+        return FILE_TRANSFER_UPLOAD_DATA_REQUEST;
     }
 }

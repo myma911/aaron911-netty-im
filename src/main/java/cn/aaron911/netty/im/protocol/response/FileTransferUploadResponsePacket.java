@@ -21,9 +21,11 @@ public class FileTransferUploadResponsePacket extends Packet {
     private ImFileState status;
 
     /**
-     * 文件路径
+     * 客户端文件目录
      */
-    private String fileUrl;
+    private String clientFileDir;
+
+    private String fileName;
 
     /**
      * 读取位置

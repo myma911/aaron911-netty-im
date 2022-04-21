@@ -1,6 +1,7 @@
 package cn.aaron911.netty.im.protocol.request;
 
 import cn.aaron911.netty.im.protocol.Packet;
+import cn.aaron911.netty.im.util.persistence.ImFileState;
 import cn.aaron911.netty.im.util.session.Session;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,6 +20,16 @@ public class FileTransferDownloadRequestPacket extends Packet {
      * 客户端文件路径（目录）
      */
     private String clientFileUrl;
+
+    /**
+     * 0开始、1中间、2结尾、3完成
+     */
+    private ImFileState status;
+
+    /**
+     * 读取位置
+     */
+    private Integer readPosition;
 
     @Override
     public Byte getCommand() {

@@ -3,7 +3,9 @@ package cn.aaron911.netty.im.client.handler.im;
 import cn.aaron911.netty.im.protocol.ICommand;
 import cn.aaron911.netty.im.protocol.request.FileTransferUploadDataRequestPacket;
 import cn.aaron911.netty.im.protocol.response.FileTransferUploadResponsePacket;
+import cn.aaron911.netty.im.util.Constant;
 import cn.aaron911.netty.im.util.persistence.ImFileState;
+import cn.aaron911.netty.im.util.persistence.ImFileUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
 import io.netty.channel.Channel;
@@ -20,8 +22,6 @@ public class FileTransferUploadResponseHandler extends SimpleChannelInboundHandl
 
     public static final FileTransferUploadResponseHandler INSTANCE = new FileTransferUploadResponseHandler();
 
-    public int buff_size = 1024 * 10;
-
     protected FileTransferUploadResponseHandler() {}
 
     @Override
@@ -36,31 +36,30 @@ public class FileTransferUploadResponseHandler extends SimpleChannelInboundHandl
             case BEGIN:
             case CENTER:
             case END:
-                String fileUrl = fileTransferUploadResponse.getFileUrl();
-                boolean exist = FileUtil.exist(fileUrl);
+                String clientFileDir = fileTransferUploadResponse.getClientFileDir();
+                String fileName = fileTransferUploadResponse.getFileName();
+                String fileFullPath = clientFileDir + fileName;
+                boolean exist = FileUtil.exist(fileFullPath);
                 if (!exist) {
-                    System.out.println(StrUtil.format("本地文件【{}】不存在，结束。", fileUrl));
+                    System.out.println(StrUtil.format("本地文件【{}】不存在，结束。", fileFullPath));
                     return;
                 }
-                File file = FileUtil.file(fileUrl);
+                File file = FileUtil.file(fileFullPath);
                 if (file.isDirectory()) {
                     System.out.println("暂不支持发送文件目录，结束。");
                     return;
                 }
                 Integer beginPos = fileTransferUploadResponse.getReadPosition();
-                RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r");
-                randomAccessFile.seek(beginPos);
-                byte[] bytes = new byte[buff_size];
-                int readSize = randomAccessFile.read(bytes);
+                byte[] bytes = new byte[Constant.BUFF_SIZE];
+                int readSize = ImFileUtil.readFile(file, beginPos, bytes);
                 FileTransferUploadDataRequestPacket fileTransferUploadDataRequestPacket;
                 if (readSize <= 0) {
-                    randomAccessFile.close();
                     fileTransferUploadDataRequestPacket = FileTransferUploadDataRequestPacket.builder()
                             //.fileUrl(fileTransferUploadResponse.getFileUrl())
                             .fileName(file.getName())
                             .status(ImFileState.COMPLETE)
                             .build();
-                } else if (readSize == buff_size){
+                } else if (readSize == Constant.BUFF_SIZE){
                     fileTransferUploadDataRequestPacket = FileTransferUploadDataRequestPacket.builder()
                             //.fileUrl(fileTransferUploadResponse.getFileUrl())
                             .fileName(file.getName())

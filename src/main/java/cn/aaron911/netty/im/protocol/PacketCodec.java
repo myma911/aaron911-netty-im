@@ -1,9 +1,8 @@
 package cn.aaron911.netty.im.protocol;
 
-import cn.aaron911.netty.im.serialize.Serializer;
+import cn.aaron911.netty.im.serialize.ImSerializer;
+import cn.aaron911.netty.im.serialize.SerializerAlgorithm;
 import cn.aaron911.netty.im.serialize.impl.JSONSerializer;
-import cn.hutool.core.util.ClassUtil;
-import cn.hutool.core.util.ReflectUtil;
 import io.netty.buffer.ByteBuf;
 import org.reflections.Reflections;
 
@@ -38,7 +37,7 @@ public class PacketCodec {
     public static final PacketCodec INSTANCE = new PacketCodec();
 
     private final Map<Byte, Class<? extends Packet>> packetTypeMap = new HashMap<>();
-    private final Map<Byte, Serializer> serializerMap = new HashMap<>();
+    private final Map<Byte, ImSerializer> serializerMap = new HashMap<>();
 
 
 
@@ -49,7 +48,7 @@ public class PacketCodec {
         reflections = new Reflections("cn.aaron911.netty.im.protocol.response");
         handleReflectionss(reflections);
 
-        Serializer serializer = new JSONSerializer();
+        ImSerializer serializer = new JSONSerializer();
         serializerMap.put(serializer.getSerializerAlgorithm(), serializer);
     }
 
@@ -71,13 +70,15 @@ public class PacketCodec {
     }
 
     public void encode(ByteBuf byteBuf, Packet packet) {
+        byte serializerAlgorithm = SerializerAlgorithm.JSON;
+        ImSerializer serializer = serializerMap.get(serializerAlgorithm);
         // 1. 序列化 java 对象
-        byte[] bytes = Serializer.DEFAULT.serialize(packet);
+        byte[] bytes = serializer.serialize(packet);
 
         // 2. 实际编码过程
         byteBuf.writeInt(MAGIC_NUMBER);
         byteBuf.writeByte(packet.getVersion());
-        byteBuf.writeByte(Serializer.DEFAULT.getSerializerAlgorithm());
+        byteBuf.writeByte(serializerAlgorithm);
         byteBuf.writeByte(packet.getCommand());
         byteBuf.writeInt(bytes.length);
         byteBuf.writeBytes(bytes);
@@ -101,7 +102,7 @@ public class PacketCodec {
         byteBuf.readBytes(bytes);
 
         Class<? extends Packet> responseClazz = getRequestType(command);
-        Serializer serializer = getSerializer(serializeAlgorithm);
+        ImSerializer serializer = getSerializer(serializeAlgorithm);
 
         if (responseClazz != null && serializer != null) {
             return serializer.deserialize(responseClazz, bytes);
@@ -110,7 +111,7 @@ public class PacketCodec {
         return null;
     }
 
-    private Serializer getSerializer(byte serializeAlgorithm) {
+    private ImSerializer getSerializer(byte serializeAlgorithm) {
         return serializerMap.get(serializeAlgorithm);
     }
 

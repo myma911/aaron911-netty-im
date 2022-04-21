@@ -17,9 +17,9 @@ public class FileTransferUploadRequestPacket  extends Packet {
     private String toUserId;
 
     /**
-     * 客户端文件地址
+     * 客户端文件地址目录
      */
-    private String fileUrl;
+    private String clientFileDir;
 
     private String fileName;
 

@@ -38,9 +38,23 @@ public class FileTransferDownloadConsoleCommand implements ConsoleCommand {
             System.out.println("不是目录，结束");
             return;
         }
+        try {
+            // 在本地创建文件
+            File file = new File(dir + imFileSession.getFileName());
+            file.createNewFile();
+        } catch (Exception e){
+            e.printStackTrace();
+            return;
+        }
+
+        imFileSession.setClientFileDir(dir);
         FileTransferDownloadRequestPacket requestPacket = new FileTransferDownloadRequestPacket();
         requestPacket.setMd5Hex(md5Hex);
-        imFileSession.setFileUrl(dir);
+        requestPacket.setClientFileUrl(dir);
+        requestPacket.setStatus(imFileSession.getStatus());
+        requestPacket.setReadPosition(imFileSession.getReadPosition());
+
+
         channel.writeAndFlush(requestPacket);
     }
 

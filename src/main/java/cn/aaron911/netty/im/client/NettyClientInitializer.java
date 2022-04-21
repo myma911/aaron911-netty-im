@@ -15,7 +15,7 @@ public class NettyClientInitializer   extends ChannelInitializer<NioSocketChanne
 
         ChannelPipeline channelPipeline = ch.pipeline();
         // 空闲检测
-        channelPipeline.addLast(new ClientIdleStateHandler());
+        //channelPipeline.addLast(new ClientIdleStateHandler());
         // 数据格式校验
         channelPipeline.addLast(new Spliter());
         // 编码解码
@@ -23,6 +23,6 @@ public class NettyClientInitializer   extends ChannelInitializer<NioSocketChanne
         // 自定义消息处理
         channelPipeline.addLast(ClientImHandler.INSTANCE);
         // 心跳定时器
-        channelPipeline.addLast(new HeartBeatTimerHandler());
+        //channelPipeline.addLast(new HeartBeatTimerHandler());
     }
 }
