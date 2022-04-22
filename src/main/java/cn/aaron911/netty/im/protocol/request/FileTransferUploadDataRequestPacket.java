@@ -18,11 +18,6 @@ public class FileTransferUploadDataRequestPacket extends Packet {
     private String md5Hex;
 
     /**
-     * 客户端文件地址
-     */
-    //private String fileUrl;
-
-    /**
      * 文件名称
      */
     private String fileName;

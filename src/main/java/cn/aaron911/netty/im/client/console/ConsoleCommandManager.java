@@ -1,25 +1,24 @@
 package cn.aaron911.netty.im.client.console;
 
 
+import cn.aaron911.netty.im.protocol.command.Command;
 import cn.aaron911.netty.im.util.session.SessionUtil;
 import io.netty.channel.Channel;
 import org.reflections.Reflections;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 
-public class ConsoleCommandManager implements ConsoleCommand {
+public class ConsoleCommandManager {
     private Map<String, ConsoleCommand> consoleCommandMap = new HashMap<>();
 
     public ConsoleCommandManager() {
         Reflections reflections = new Reflections("cn.aaron911.netty.im.client.console");
         Set<Class<? extends ConsoleCommand>> subTypes = reflections.getSubTypesOf(ConsoleCommand.class);
         subTypes.forEach(x -> {
-            if ("ConsoleCommandManager".equals(x.getSimpleName())) {
-                return;
-            }
             try {
                 ConsoleCommand consoleCommand = x.newInstance();
                 consoleCommandMap.put(consoleCommand.getCommand().toString(), consoleCommand);
@@ -30,8 +29,9 @@ public class ConsoleCommandManager implements ConsoleCommand {
         });
     }
 
-    @Override
+
     public void exec(Scanner scanner, Channel channel) {
+        printCommand();
         //  获取第一个指令
         String command = scanner.next();
 
@@ -46,11 +46,25 @@ public class ConsoleCommandManager implements ConsoleCommand {
             consoleCommand.exec(scanner, channel);
         } else {
             System.err.println("无法识别[" + command + "]指令，请重新输入!");
+            printCommand();
         }
     }
 
-    @Override
-    public Byte getCommand() {
-        return null;
+    private static void printCommand() {
+        try {
+            System.out.println("英文指令#数字指令，输入哪个都行");
+            Field[] fields = Command.class.getFields();
+            for (Field f : fields) {
+                Object o = f.get(Command.class);
+                if (o instanceof Byte) {
+                    byte b = (byte) o;
+                    if (b % 2 == 1) {
+                        System.out.println(f.getName() + "#" + o);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -26,66 +26,60 @@ public class FileTransferUploadRequestHandler extends SimpleChannelInboundHandle
     private FileTransferUploadRequestHandler() {}
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, FileTransferUploadRequestPacket fileTransferUploadRequestPacket) {
+    protected void channelRead0(ChannelHandlerContext ctx, FileTransferUploadRequestPacket requestPacket) {
         //
         Channel channel = ctx.channel();
         // 要上传的文件的md5
-        String md5Hex = fileTransferUploadRequestPacket.getMd5Hex();
+        String md5Hex = requestPacket.getMd5Hex();
 
         // 查看全局服务端是否存在该文件
         ImFileGlobal imFileGlobal = ImFileCacheUtil.get(md5Hex);
 
+        FileTransferUploadResponsePacket responsePacket = new FileTransferUploadResponsePacket();
+        responsePacket.setMd5Hex(md5Hex);
         if (null != imFileGlobal){
             // 给客户端响应
-            FileTransferUploadResponsePacket fileTransferUploadResponsePacket = FileTransferUploadResponsePacket.builder()
-                    .status(ImFileState.COMPLETE)
-                    .md5Hex(md5Hex)
-                    .build();
-            channel.writeAndFlush(fileTransferUploadResponsePacket);
+            responsePacket.setStatus(ImFileState.COMPLETE);
+            channel.writeAndFlush(responsePacket);
             return;
         }
 
         // 查看会话中文件是否存在
         Session session = SessionUtil.getSession(channel);
-        ImFileSession imFileSessionInSession = session.getFileMap().get(md5Hex);
-        if (null == imFileSessionInSession){
+        ImFileSession imFileSession = session.getFileMap().get(md5Hex);
+        if (null == imFileSession){
             // 存储在会话中
-            // TODO... 服务器端存储路径
-            String serverFileUrl = "/xxx/" + md5Hex + ".xxx";
-            FileUtil.newFile(serverFileUrl);
-            imFileSessionInSession = ImFileSession.builder()
+            // 服务器端存储路径
+            String extName = FileUtil.extName(requestPacket.getFileName());
+            String serverFullFilePath = "/xxx/" + md5Hex + "." + extName;
+            FileUtil.touch(serverFullFilePath);
+            imFileSession = ImFileSession.builder()
+                    .toUserId(requestPacket.getToUserId())
                     .status(ImFileState.BEGIN)
                     .readPosition(0)
-                    .fileName(fileTransferUploadRequestPacket.getFileName())
-                    .fileSize(fileTransferUploadRequestPacket.getFileSize())
-                    .clientFileDir(fileTransferUploadRequestPacket.getClientFileDir())
-                    .serverFileUrl(serverFileUrl)
-                    .md5Hex(fileTransferUploadRequestPacket.getMd5Hex())
+                    .fileName(requestPacket.getFileName())
+                    .fileSize(requestPacket.getFileSize())
+                    .clientFileDir(requestPacket.getClientFileDir())
+                    .serverFileUrl(serverFullFilePath)
+                    .md5Hex(requestPacket.getMd5Hex())
                     .build();
-            session.getFileMap().put(md5Hex, imFileSessionInSession);
+            session.getFileMap().put(md5Hex, imFileSession);
 
             // 给客户端响应
-            FileTransferUploadResponsePacket fileTransferUploadResponsePacket = FileTransferUploadResponsePacket.builder()
-                    .status(ImFileState.BEGIN)
-                    .readPosition(0)
-                    .clientFileDir(fileTransferUploadRequestPacket.getClientFileDir())
-                    .fileName(fileTransferUploadRequestPacket.getFileName())
-                    .build();
-            channel.writeAndFlush(fileTransferUploadResponsePacket);
+            responsePacket.setStatus(ImFileState.BEGIN);
+            responsePacket.setReadPosition(0);
+            responsePacket.setClientFileDir(requestPacket.getClientFileDir());
+            responsePacket.setFileName(requestPacket.getFileName());
+            channel.writeAndFlush(responsePacket);
             return;
         }
 
         // 给客户端响应
-        FileTransferUploadResponsePacket fileTransferUploadResponsePacket = FileTransferUploadResponsePacket.builder()
-                .status(ImFileState.CENTER)
-                .clientFileDir(imFileSessionInSession.getClientFileDir())
-                .fileName(imFileSessionInSession.getFileName())
-                .status(imFileSessionInSession.getStatus())
-                .readPosition(imFileSessionInSession.getReadPosition())
-                .md5Hex(imFileSessionInSession.getMd5Hex())
-                .build();
-        channel.writeAndFlush(fileTransferUploadResponsePacket);
-        return;
+        responsePacket.setStatus(ImFileState.CENTER);    //???? imFileSession.getStatus()
+        responsePacket.setClientFileDir(imFileSession.getClientFileDir());
+        responsePacket.setFileName(imFileSession.getFileName());
+        responsePacket.setReadPosition(imFileSession.getReadPosition());
+        channel.writeAndFlush(responsePacket);
     }
 
     @Override
