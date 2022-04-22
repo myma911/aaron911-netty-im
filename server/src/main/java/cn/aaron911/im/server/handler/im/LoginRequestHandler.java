@@ -30,6 +30,7 @@ public class LoginRequestHandler extends SimpleChannelInboundHandler<LoginReques
             final Session session = new Session(userId, loginRequestPacket.getUserName());
             SessionUtil.bindSession(session, ctx.channel());
             loginResponsePacket.setSession(session);
+            System.out.println(session.toString() + ",登錄");
         } else {
             loginResponsePacket.setReason("账号密码校验失败");
             loginResponsePacket.setSuccess(false);

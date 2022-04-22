@@ -22,6 +22,7 @@ public class NettyClient {
 
     public static void main(String[] args) {
         final ClientProperty cilentProperty = new ClientProperty();
+        // 获取随机端口
         connect(new Bootstrap(), new NioEventLoopGroup(), cilentProperty, cilentProperty.getMax_retry());
     }
 

@@ -8,7 +8,7 @@ import java.net.UnknownHostException;
 /**
  * 提供查看端口是否被占用的方法
  */
-public class NetUtils {
+public class NetUtil {
     public static void main(String[] args) {
         System.out.println(isLoclePortUsing(8080));
     }
@@ -46,5 +46,9 @@ public class NetUtils {
             //所以，这里在捕获异常后，什么也不用做
         }
         return flag;
+    }
+
+    public static int getRandomPort(){
+        return 0;
     }
 }
