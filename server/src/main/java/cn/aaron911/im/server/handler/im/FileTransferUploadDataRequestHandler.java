@@ -67,6 +67,7 @@ public class FileTransferUploadDataRequestHandler extends SimpleChannelInboundHa
                         imFileGlobal.setFileSize(imFileSession.getFileSize());
                         imFileGlobal.setServerFileUrl(imFileSession.getServerFileUrl());
                         imFileGlobal.setMd5Hex(md5Hex);
+                        ImFileCacheUtil.set(md5Hex, imFileGlobal);
                     }
 
                     // 更新会话
@@ -87,6 +88,8 @@ public class FileTransferUploadDataRequestHandler extends SimpleChannelInboundHa
                         System.out.println("全局文件丢失，结束");
                         return;
                     }
+                    Session toUserSession = SessionUtil.getSession(toUserChannel);
+                    toUserSession.getFileMap().put(md5Hex, imFileSession);
                     // 给用户发文件源信息
                     FileTransferDownloadNoticeResponsePacket noticeResponsePacket = new FileTransferDownloadNoticeResponsePacket();
                     noticeResponsePacket.setMd5Hex(md5Hex);

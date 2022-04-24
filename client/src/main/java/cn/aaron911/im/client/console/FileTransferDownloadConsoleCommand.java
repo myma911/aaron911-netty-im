@@ -28,8 +28,8 @@ public class FileTransferDownloadConsoleCommand implements ConsoleCommand {
         String dir = scanner.next();
         boolean exist = FileUtil.exist(dir);
         if (!exist){
-            System.out.println("目录不存在，结束");
-            return;
+            FileUtil.mkdir(dir);
+            System.out.println("目录不存在，创建目录["+ dir +"]");
         }
         if (!FileUtil.isDirectory(dir)){
             System.out.println("不是目录，结束");
@@ -50,7 +50,6 @@ public class FileTransferDownloadConsoleCommand implements ConsoleCommand {
         requestPacket.setClientFileUrl(dir);
         requestPacket.setStatus(imFileSession.getStatus());
         requestPacket.setReadPosition(imFileSession.getReadPosition());
-
 
         channel.writeAndFlush(requestPacket);
     }

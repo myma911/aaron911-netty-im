@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import static cn.aaron911.im.common.protocol.command.Command.FILE_TRANSFER_DOWNLOAD_RESPONSE;
+import static cn.aaron911.im.common.protocol.command.Command.FILE_TRANSFER_DOWNLOAD_NOTICE_RESPONSE;
 
 @Data
 @Builder
@@ -25,6 +25,6 @@ public class FileTransferDownloadNoticeResponsePacket extends ImPacket {
 
     @Override
     public Byte getCommand() {
-        return FILE_TRANSFER_DOWNLOAD_RESPONSE;
+        return FILE_TRANSFER_DOWNLOAD_NOTICE_RESPONSE;
     }
 }

@@ -25,7 +25,7 @@ public class FileTransferDownloadNoticeResponseHandler extends SimpleChannelInbo
         String fileName = fileTransferDownloadNoticeResponsePacket.getFileName();
         String md5Hex = fileTransferDownloadNoticeResponsePacket.getMd5Hex();
         Long fileSize = fileTransferDownloadNoticeResponsePacket.getFileSize();
-        System.out.println(StrUtil.format("用户【{}】给您发来文件【{}】大小【{}】md5【{}】", fromSession.getUserName(), fileName, md5Hex, fileSize));
+        System.out.println(StrUtil.format("用户【{}】给您发来文件【{}】大小【{}】md5【{}】", fromSession.getUserName(), fileName, fileSize, md5Hex));
         Session session = SessionUtil.getSession(ctx.channel());
         ImFileSession imFileSession = ImFileSession.builder()
                 .md5Hex(md5Hex)

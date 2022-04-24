@@ -7,7 +7,7 @@ public class ClientProperty {
 
     private int max_retry = 5;
 
-    private String host = "192.168.0.164";
+    private String host = "127.0.0.1";
 
     private int port = 8000;
 

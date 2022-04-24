@@ -84,14 +84,13 @@ public class FileTransferDownloadRequestHandler extends SimpleChannelInboundHand
                     break;
                 case COMPLETE:
                     fileTransferDownloadResponsePacket.setStatus(ImFileState.COMPLETE);
-
+                    fileTransferDownloadResponsePacket.setBeginPos(0);
+                    fileTransferDownloadResponsePacket.setEndPos(0);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected value: " + status);
             }
-
             channel.writeAndFlush(fileTransferDownloadResponsePacket);
-            return;
         } catch (Exception e){
             e.printStackTrace();
         }

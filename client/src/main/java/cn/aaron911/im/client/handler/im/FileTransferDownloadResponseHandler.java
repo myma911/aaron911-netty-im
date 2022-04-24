@@ -9,6 +9,7 @@ import cn.aaron911.im.common.util.persistence.ImFileState;
 import cn.aaron911.im.common.util.persistence.ImFileUtil;
 import cn.aaron911.im.common.util.session.Session;
 import cn.aaron911.im.common.util.session.SessionUtil;
+import cn.hutool.core.io.FileUtil;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -47,7 +48,7 @@ public class FileTransferDownloadResponseHandler extends SimpleChannelInboundHan
         Channel channel = ctx.channel();
         Session session = SessionUtil.getSession(channel);
         ImFileSession imFileSession = session.getFileMap().get(md5Hex);
-        File file = new File(imFileSession.getClientFileDir() + imFileSession.getFileName());
+        File file = new File(imFileSession.getClientFileDir() + System.lineSeparator() + imFileSession.getFileName());
         FileTransferDownloadRequestPacket requestPacket = new FileTransferDownloadRequestPacket();
         requestPacket.setMd5Hex(md5Hex);
         switch (status){
@@ -64,7 +65,7 @@ public class FileTransferDownloadResponseHandler extends SimpleChannelInboundHan
                 channel.writeAndFlush(requestPacket);
                 break;
             case COMPLETE:
-                System.out.println("文件下载完毕");
+                System.out.println("文件[" + imFileSession.getFileName() + "]下载完毕");
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + status);
